@@ -77,13 +77,13 @@ kitty + fish + hyprland dotfiles
 
 ## Setup
 
-Clone the repo and copy files to their respective locations, or symlink with stow. Do not run install script unless you want all the dependencies and software packages.
+Clone the repo and copy files to their respective locations, or symlink with stow. 
+
+> Do not run install.sh unless you want all the dependencies and software packages.
 
 ```bash
 git clone https://github.com/flat1ine/flat_dotfiles.git
 ```
-
-> Make sure dependencies are installed before applying configs. Some configs (e.g. Waybar, Hyprland) will error on launch if the relevant package isn't present.
 
 ## Notes
 
