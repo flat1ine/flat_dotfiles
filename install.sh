@@ -3,11 +3,16 @@
 # HYPR ARCH SETUP - Interactive Version
 # originally meant for CachyOS x86_64 Linux 6.18.9-2-cachyos and hyprland 0.53.3-2.1
 # shell: fish 4.4.0 terminal: kitty 0.45.0
-# RUN WITH 'sudo -E ./install.sh' !!! to preserve environemnt vars
+# RUN WITH 'sudo -E ./install.sh' inside cloned git repo
 # REQUIRES paru pacman
 echo "flat_dotfiles hyperland arch linux install"
 echo "====================="
 echo ""
+
+# move all dotfiles
+cp -r ./.config ~
+cp -r ./.local ~
+cp ./.vimrc ~
 
 # alias
 alias vi=vim --save
