@@ -79,7 +79,7 @@ kitty + fish + hyprland dotfiles
 
 Clone the repo and copy files to their respective locations, or symlink with stow. 
 
-> Do not run install.sh unless you want all the dependencies and software packages.
+> Do not run install.sh unless you want ALL the dependencies and software packages.
 
 ```bash
 git clone https://github.com/flat1ine/flat_dotfiles.git
@@ -87,6 +87,7 @@ git clone https://github.com/flat1ine/flat_dotfiles.git
 
 ## Notes
 
+- See docs.md https://github.com/flat1ine/flat_dotfiles/blob/main/docs.md for keybinds and manual setup steps.
 - EasyEffects profiles live in `~/.local/share/easyeffects/` and are loaded automatically, configurable in the EasyEffects UI.
 - WirePlumber's `disable-suspension.conf` prevents audio devices from suspending during idle.
 - PipeWire's `custom.conf` overrides default sample rate / buffer settings.
