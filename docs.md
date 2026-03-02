@@ -1,22 +1,19 @@
-```markdown
-###################
-### KEYBINDINGS ###
-###################
+
+
+# Keybinds
 ## General Information
 
 - **Main Modifier**: SUPER (Windows/Command key)
   - Configured as `$mainMod` variable throughout binds
   - Can be changed by modifying `SUPER` to your preferred modifier (`CTRL`, `ALT`, etc.)
 
-
-
-## Application Shortcuts
+### Application Shortcuts
 
 | Keybind | Action |
 |---------|--------|
-| $MOD + Q | Open terminal (defined in config variables) |
-| $MOD + E | Launch file manager (configured variable) |
-| $MOD + R | Show application launcher menu |
+| $mainMod + Q | Open terminal (defined in config variables) |
+| $mainMod + E | Launch file manager (configured variable) |
+| $mainMod + R | Show application launcher menu |
 
 
 
@@ -25,9 +22,9 @@
 ### Basic Operations
 | Keybind | Action |
 |---------|--------|
-| $MOD + C | Close active window |
-| $MOD + V | Toggle floating mode for current window |
-| $MOD + F | Toggle fullscreen for current window |
+| $mainMod + C | Close active window |
+| $mainMod + V | Toggle floating mode for current window |
+| $mainMod + F | Toggle fullscreen for current window |
 
 ### Focus Movement (Arrow Keys)
 Use with main modifier to move focus between windows:
@@ -43,18 +40,18 @@ Number keys 1-0 switch workspaces, where '0' represents workspace 10.
 
 | Keybind | Action |
 |---------|--------|
-| $MOD + [number] | Focus workspace number |
+| $mainMod + [number] | Focus workspace number |
 
 With Shift to move active window:
 | Keybind | Action |
 |---------|--------|
-| $MOD+SHIFT + [number] | Move current window to that workspace |
+| $mainMod+SHIFT + [number] | Move current window to that workspace |
 
 ### Special Workspace (Scratchpad)
 | Keybind | Action |
 |---------|--------|
-| $MOD + D | Toggle special "magic" scratchpad workspace |
-| $MOD+SHIFT + D | Send active window directly to magic workspace |
+| $mainMod + D | Toggle special "magic" scratchpad workspace |
+| $mainMod+SHIFT + D | Send active window directly to magic workspace |
 
 
 
@@ -62,8 +59,8 @@ With Shift to move active window:
 
 | Keybind | Action |
 |---------|--------|
-| $MOD + P | Tiled layout (dwindle) - see note below |
-| $MOD + J | Toggle split mode for windows |
+| $mainMod + P | Tiled layout (dwindle) - see note below |
+| $mainMod + J | Toggle split mode for windows |
 
 **Note**: The `togglefloating` and window arrangement binds use the "Dwindle" tiling algorithm by default.
 
@@ -77,8 +74,8 @@ See arrow key section above (using main modifier)
 ### Drag to Move/Resize
 | Keybind | Action |
 |---------|--------|
-| $MOD + Left Mouse Button drag | Move window position |
-| $MOD + Right Mouse Button drag | Resize active window |
+| $mainMod + Left Mouse Button drag | Move window position |
+| $mainMod + Right Mouse Button drag | Resize active window |
 
 
 
@@ -114,7 +111,7 @@ These media control buttons work globally:
 
 | Keybind | Action |
 |---------|--------|
-| $MOD+SHIFT + S | Region selection screenshot (hyprshot) |
+| $mainMod+SHIFT + S | Region selection screenshot (hyprshot) |
 | Print Screen key | Full output capture |
 
 
@@ -123,10 +120,11 @@ These media control buttons work globally:
 
 | Keybind | Action |
 |---------|--------|
-| $MOD + L | Lock screen using hyprlock |
+| $mainMod + L | Lock screen using hyprlock |
 | Mouse Scroll with main modifier held | Cycle through existing workspaces |
 
-
+## Raw keybinds
+```
 ###################
 ### KEYBINDINGS ###
 ###################
@@ -212,15 +210,15 @@ bind = $mainMod, F, fullscreen
 
 # Browser bind
 bind = $mainMod, B, exec, vivaldi
+```
 
 
 
 
 
+# Mounting Drives
 
-## Mount Drives
-
-### Local Storage Configuration (fstab entries)
+## Local Storage Configuration (fstab entries)
 
 These are example fstab configurations for mounting local drives with proper permissions:
 
@@ -230,7 +228,7 @@ UUID=8C96B70B96B6F4B4  /mnt/drive2  ntfs3  rw,uid=1000,gid=1000,umask=022,noatim
 UUID=90AB-IJKL        /mnt/drive3  vfat   rw,user,fmask=600,dmask=755    0      0
 ```
 
-# Configuration steps:
+## Configuration steps:
 1. Create mount points: `sudo mkdir -p /mnt/{drive1,drive2,drive3}`
 2. Identify UUIDs with: `lsblk -f`
 3. Add entries to `/etc/fstab` using your actual drive UUIDs and file systems
@@ -242,52 +240,52 @@ UUID=90AB-IJKL        /mnt/drive3  vfat   rw,user,fmask=600,dmask=755    0      
 Steps for mounting a network share from Synology:
 
 
-# Create mount point:
+### Create mount point:
 mkdir /mnt/synology
 
-# Temporary test mount (replace with your details):
+### Temporary test mount (replace with your details):
 mount -t nfs nas.ip.address:/volume1/share_name /mnt/synology
 
-# Permanent fstab entry format:
+### Permanent fstab entry format:
 nas.ip.address:/YOUR_SHARE_NAME  /mnt/synology  nfs4  defaults,_netdev,noatime,x-systemd.automount,rw,user 0 0
 
 
-# Optional symlink for convenience (replace with your actual share path):
+### Optional symlink for convenience (replace with your actual share path):
 `ln -s /mnt/synology/YOUR_SUBFOLDER ~/Downloads`
 
-## Network Configuration
+# Network Configuration
 
-# Manual network setup using nmcli:
+## Manual network setup using nmcli:
 
 ### Wired Connection Example (192.168.1.x)
 
 
-# View current connection settings:
+### View current connection settings:
 nmcli c show "Wired connection 1"
 
-# Configure static IP address:
+### Configure static IP address:
 nmcli con mod "Wired connection 1" ipv4.method manual
 nmcli con mod "Wired connection 1" ipv4.addresses "192.168.1.50/24"
 nmcli con mod "Wired connection 1" ipv4.gateway "192.168.1.1"
 
-# Set DNS servers (Cloudflare and Google):
+### Set DNS servers (Cloudflare and Google):
 nmcli con mod "Wired connection 1" ipv4.dns "1.1.1.1,8.8.8.8"
 nmcli con mod "Wired connection 1" ipv4.ignore-auto-dns yes
 
-# Apply changes:
+### Apply changes:
 nmcli con down "Wired connection 1"; nmcli con up "Wired connection 1"
 
-# Verify configuration:
+### Verify configuration:
 nmcli -p device show
 
 
-### Changing IP Address Example (to 192.168.1.150)
+## Changing IP Address Example (to 192.168.1.150)
 
 
-# Update the address while keeping other settings:
+### Update the address while keeping other settings:
 nmcli c mod "Wired connection 1" ipv4.addresses "192.168.1.150/24"
 
-# Reapply configuration (same commands as above):
+### Reapply configuration (same commands as above):
 nmcli con down "Wired connection 1"; nmcli con up "Wired connection 1"
 
 
@@ -298,9 +296,9 @@ Note: Replace all IP addresses and hostnames with your actual network details.
 
 
 
-## No Sound / Mic Fix
+# No Sound / Mic Fix
 
-### Steps to Resolve Audio Issues with Realtek ALC897 Codec
+## Steps to Resolve Audio Issues with Realtek ALC897 Codec
 
 1. **Open Alsamixer**
     - Turn off automute on all devices.
@@ -333,9 +331,9 @@ Note: Replace all IP addresses and hostnames with your actual network details.
 
 
 
-## Running Steam Games with Proton
+# Running Steam Games with Proton
 
-### Adding Non-Steam Applications to Steam
+## Adding Non-Steam Applications to Steam
 
 1. Right-click in library view and select "Add a non-Steam Game"
 2. Browse for the game's executable file (.exe)
@@ -343,7 +341,7 @@ Note: Replace all IP addresses and hostnames with your actual network details.
 
 ### Skyrim Special Edition Configuration Example
 
-## Compatibility Folder Settings
+### Compatibility Folder Settings
 Set custom compatibility folder path:
 ```
 STEAM_COMPAT_DATA_PATH="/mnt/drive2/SteamLibrary/steamapps/compatdata/975370/" %command%
@@ -356,7 +354,7 @@ STEAM_COMPAT_MOUNTS="/path/to/folder1:/path/to/folder2" %command%
 Example: STEAM_COMPAT_MOUNTS="~/Documents/My Games/Skyrim Special Edition/:/drive_c/users/steamuser/My Documents/My Games/" %command%
 ```
 
-#### Game Files Location
+### Game Files Location
 Main game installation:
 ```
 /mnt/drive3/SteamLibrary/steamapps/common/Skyrim Special Edition/
@@ -385,14 +383,13 @@ download_depot 489830 489832 8702665189575304780
 download_depot 489830 489833 2289561010626853674
 ```
 
-#### Post-Download Steps:
+### Post-Download Steps:
 - Files download to: `~/.local/share/Steam/ubuntu12_32/steamapps/content/`
 - Move downloaded files to your game folder at `.../SteamLibrary/steamapps/common/Skyrim Special Edition/`
 
 ### Mod Organizer 2 Linux Installation
 Follow the guide from [Furglitch's modorganizer2-linux-installer](https://github.com/Furglitch/modorganizer2-linux-installer) for setting up MO2 on Linux.
 
-#### Important Notes:
+### Important Notes:
 - Always make sure to NOT use NTFS drives with steam/proton (linking errors)
 - Consider creating backups of your save data and configuration before making changes to the Proton filesystem
-```
