@@ -83,6 +83,10 @@ Clone the repo and copy files to their respective locations, or symlink with sto
 
 ```bash
 git clone https://github.com/flat1ine/flat_dotfiles.git
+cd flat_dotfiles
+cp -r ./.config ~/.config
+cp -r ./.local ~/.local
+cp ./.vimrc ~
 ```
 
 ## Notes
