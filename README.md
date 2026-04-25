@@ -1,5 +1,11 @@
 # flat_dotfiles
+
 kitty + fish + hyprland dotfiles
+
+run the install script (will prompt per module group):
+```bash
+curl -sSL https://raw.githubusercontent.com/flat1ine/flat_dotfiles/main/install.sh | bash
+```
 
 ## Environment
 
@@ -26,51 +32,51 @@ kitty + fish + hyprland dotfiles
 ```
 .
 ├── .config
-│   ├── ashell
-│   │   └── config.toml
-│   ├── dolphinrc
-│   ├── fish
-│   │   ├── config.fish
-│   │   └── fish
-│   │       ├── completions
-│   │       ├── conf.d
-│   │       ├── config.fish
-│   │       ├── fish_variables
-│   │       └── functions
-│   │           ├── vi.fish
-│   │           └── yay.fish
-│   ├── fuzzel
-│   │   └── fuzzel.ini
-│   ├── hypr
-│   │   ├── hypridle.conf
-│   │   ├── hyprland.conf
-│   │   └── hyprlock.conf
-│   ├── kitty
-│   │   └── kitty.conf
-│   ├── mako
-│   │   └── config
-│   ├── menus
-│   │   └── applications.menu
-│   ├── mimeapps.list
-│   ├── mpv
-│   │   └── mpv.conf
-│   ├── pipewire
-│   │   └── pipewire.conf.d
-│   │       └── custom.conf
-│   ├── waybar
-│   │   ├── config.jsonc
-│   │   ├── power_menu.xml
-│   │   └── style.css
-│   └── wireplumber
-│       └── wireplumber.conf.d
-│           └── disable-suspension.conf
+│   ├── ashell
+│   │   └── config.toml
+│   ├── dolphinrc
+│   ├── fish
+│   │   ├── config.fish
+│   │   └── fish
+│   │       ├── completions
+│   │       ├── conf.d
+│   │       ├── config.fish
+│   │       ├── fish_variables
+│   │       └── functions
+│   │           ├── vi.fish
+│   │           └── yay.fish
+│   ├── fuzzel
+│   │   └── fuzzel.ini
+│   ├── hypr
+│   │   ├── hypridle.conf
+│   │   ├── hyprland.conf
+│   │   └── hyprlock.conf
+│   ├── kitty
+│   │   └── kitty.conf
+│   ├── mako
+│   │   └── config
+│   ├── menus
+│   │   └── applications.menu
+│   ├── mimeapps.list
+│   ├── mpv
+│   │   └── mpv.conf
+│   ├── pipewire
+│   │   └── pipewire.conf.d
+│   │       └── custom.conf
+│   ├── waybar
+│   │   ├── config.jsonc
+│   │   ├── power_menu.xml
+│   │   └── style.css
+│   └── wireplumber
+│       └── wireplumber.conf.d
+│           └── disable-suspension.conf
 ├── .local
-│   └── share
-│       └── easyeffects
-│           ├── input
-│           │   └── mascnprvoice_noisereduction.json
-│           └── output
-│               └── LoudnessEqualizer.json
+│   └── share
+│       └── easyeffects
+│           ├── input
+│           │   └── mascnprvoice_noisereduction.json
+│           └── output
+│               └── LoudnessEqualizer.json
 ├── install.sh
 └── .vimrc
 ```
