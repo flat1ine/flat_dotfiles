@@ -128,3 +128,7 @@ yay -Syu steam --noconfirm
 # dev environment
 yay -Syu code docker --noconfirm
 systemctl start docker && systemctl enable docker
+
+# ai toolkit
+curl -fsSL https://claude.ai/install.sh | bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.config/fish/config.fish && source ~/.config/fish/config.fish
