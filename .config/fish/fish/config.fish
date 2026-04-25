@@ -16,3 +16,6 @@ source /usr/share/cachyos-fish-config/cachyos-config.fish
     else
         set -x LD_LIBRARY_PATH /opt/cuda/lib64
     end
+export PATH="$HOME/.local/bin:$PATH"
+set -x ANTHROPIC_BASE_URL "http://localhost:5000"
+set -x ANTHROPIC_API_KEY "none"

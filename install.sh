@@ -1,134 +1,151 @@
 #!/bin/bash
 
-# HYPR ARCH SETUP - Interactive Version
+# HYPR ARCH SETUP - REPL Version
 # originally meant for CachyOS x86_64 Linux 6.18.9-2-cachyos and hyprland 0.53.3-2.1
 # shell: fish 4.4.0 terminal: kitty 0.45.0
-# RUN WITH 'sudo -E ./install.sh' inside cloned git repo
-# REQUIRES paru pacman
-echo "flat_dotfiles hyperland arch linux install"
+
+echo "flat_dotfiles HYPR ARCH SETUP - REPL Version"
+echo "originally meant for CachyOS x86_64 Linux 6.18.9-2-cachyos and hyprland 0.53.3-2.1"
+echo "shell: fish 4.4.0 terminal: kitty 0.45.0"
 echo "====================="
-echo ""
 
-# move all dotfiles
-cp -r ./.config ~
-cp -r ./.local ~
-cp ./.vimrc ~
+module_dotfiles() {
+    echo "[*] Running Dotfiles & Base Setup..."
+    # move all dotfiles
+    cp -r ./.config ~ 2>/dev/null || echo "! Warning: Could not copy .config (might already exist or be missing)"
+    cp -r ./.local ~ 2>/dev/null || echo "! Warning: Could not copy .local"
+    [ -f "./.vimrc" ] && cp ./.vimrc ~ || echo "! Skipping vimrc, file not found in current dir"
 
-# alias
-alias vi=vim --save
-alias yay=paru --save
+    # persist aliases to fish config
+    echo "[*] Persisting aliases (vi=vim, yay=paru) to ~/.config/fish/config.fish..."
+    mkdir -p ~/.config/fish 2>/dev/null || true
 
-# install mako (notification daemon)
-yay -Syu mako --noconfirm
+    if ! grep -q "alias vi 'vim --save'" ~/.config/fish/config.fish 2>/dev/null; then
+        echo "alias vi 'vim --save'" >> ~/.config/fish/config.fish || echo "! Warning: Could not append alias to fish config."
+    fi
 
-# test notifications:
-#notify-send -u low "hello world\!" "This is a low urgency message"
-# 
-#notify-send -u normal "hello world\!" "This is a normal message"
-# 
-#notify-send -u critical \
-#  "This is a critical message\!" \
-#  "OK, that was just a demo ;)"
+    if ! grep -q "alias yay 'paru --save'" ~/.config/fish/config.fish 2>/dev/null; then
+        echo "alias yay 'paru --save'" >> ~/.config/fish/config.fish || echo "! Warning: Could not append alias to fish config."
+    fi
+}
 
-# install screenshot handler (grim + slurp)
-yay -Syu hyprshot --noconfirm
+module_hyprland() {
+    echo "[*] Running Hyprland / Desktop Environment setup..."
+    paru -Syu mako --noconfirm
+    paru -Syu hyprshot --noconfirm
+    paru -Syu fuzzel --noconfirm
+    paru -Syu hyprlock --noconfirm
+    paru -Syu waybar --noconfirm
+    paru -Syu hypridle --noconfirm
+    paru -Syu adw-gtk-theme qt6ct kvantum --noconfirm
+    paru -Syu archlinux-xdg-menu --noconfirm
+    ln -fs /etc/xdg/menus/arch-applications.menu ~/.config/menus/applications.menu 2>/dev/null || echo "! Warning: Could not link xdg menu"
+    paru -Syu imv mpv vivaldi --noconfirm
+    paru -Syu xwaylandvideobridge --noconfirm
+}
 
-# install app launcher (fuzzel)
-yay -Syu fuzzel --noconfirm
+module_audio() {
+    echo "[*] Running Audio & Input Processing setup..."
+    paru -Syu easyeffects lsp-plugins calf --noconfirm
+    # Download and move LADSPA plugin if it exists or needs to be fetched?
+    LADSPA_URL="https://github.com/Rikorose/DeepFilterNet/releases/download/v0.5.6/libdeep_filter_ladspa-0.5.6-x86_64-unknown-linux-gnu.so"
+    FILENAME=$(basename "$LADSPA_URL")
 
-# install a screen locker (hyprlock)
-yay -Syu hyprlock --noconfirm
+    if [ ! -f "$FILENAME" ]; then
+        echo "[*] Downloading DeepFilterNet LADSPA plugin..."
+        curl -LO "$LADSPA_URL" || echo "! Failed to download plugin."
+    fi
 
-# install a status bar (waybar)
-yay -Syu waybar --noconfirm
+    sudo mv -v "$FILENAME" /usr/lib64/ladspa/libdeep_filter_ladspa.so 2>/dev/null || {
+         echo "! Error: Could not move LADSPA file (check if directory exists or permissions)"
+    }
 
-# install idle management daemon
-yay -Syu hypridle --noconfirm
+    easyeffects -l mascnprvoice_noisereduction 2>/dev/null || echo "! Warning: Could not load easyeffects preset."
+}
 
-# install dark mode (adwaita + qt6)
-yay -Syu adw-gtk-theme qt6ct kvantum --noconfirm
+module_networking() {
+    echo "[*] Running Networking & DNS setup (Cloudflare)..."
+    paru -S dnscrypt-proxy --noconfirm
+    sudo systemctl stop systemd-resolved 2>/dev/null || true
+    sudo systemctl disable --now systemd-resolved 2>/dev/null || true
+    [ -f "/etc/dnscrypt-proxy/dnscrypt-proxy.toml" ] && sudo cp /etc/dnscrypt-proxy/dnscrypt-proxy.toml /etc/dnscrypt-proxy/dnscrypt-proxy.toml.bak
 
-# install archlinux-xdg-menu to fix dolphin (wtf)
-yay -Syu archlinux-xdg-menu --noconfirm
-ln -fs /etc/xdg/menus/arch-applications.menu ~/.config/menus/applications.menu
+    sudo sed -i \
+      -e "s|^#\?listen_addresses =.*|listen_addresses = ['127.0.0.53:53']|" \
+      -e "s|^#\?dnscrypt_servers =.*|dnscrypt_servers = false|" \
+      -e "s|^#\?doh_servers =.*|doh_servers = true|" \
+      -e "s|^#\?require_dnssec =.*|require_dnssec = true|" \
+      -e "s|^#\?cache =.*|cache = true|" \
+      -e "s|^#\?cache_size =.*|cache_size = 4096|" \
+      "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
 
-# install image viewer (imv)
-yay -Syu imv --noconfirm
+    sudo sed -i -e "s|^#.\?server_names =.*|server_names = ['cloudflare', 'cloudflare-security']|" "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
+    sudo systemctl enable --now dnscrypt-proxy 2>/dev/null || echo "! Error: Failed to start dnscrypt-proxy."
+}
 
-# install video player (mpv)
-yay -Syu mpv --noconfirm
+module_dev() {
+    echo "[*] Running Development & AI Tools setup..."
+    paru -Syu code docker --noconfirm
+    sudo systemctl start docker && sudo systemctl enable docker 2>/dev/null || echo "! Warning: Docker service failed to start"
 
-# install web browser (vivaldi)
-yay -Syu vivaldi --noconfirm
+    # Sublime Text (requires repo addition)
+    if ! grep -q "sublimehq-pub.gpg" /etc/pacman.key 2>/dev/null; then # Rough check if we've done this before? Not perfect but better than nothing for a script.
+        echo "[*] Setting up Sublime Text repository..."
+        curl -O https://download.sublimetext.com/sublimehq-pub.gpg && sudo pacman-key --add sublimehq-pub.gpg && sudo pacman-key --lsign-key 8A8F901A && rm sublimehq-pub.gpg || echo "! Failed to add Sublime key"
+        echo -e "\n[sublime-text]\nServer = https://download.sublimetext.com/arch/stable/x86_64" | sudo tee -a /etc/pacman.conf > /dev/null
+    fi
+    paru -Syu sublime-text --noconfirm
 
-# install calculator (galculator)
-yay -Syu galculator --noconfirm
+    # AI Toolkit (Claude)
+    echo "[*] Installing Claude CLI..."
+    curl -fsSL https://claude.ai/install.sh | bash || echo "! Failed to install Claude"
+}
 
-# install sublime-text
-curl -O https://download.sublimetext.com/sublimehq-pub.gpg && sudo pacman-key --add sublimehq-pub.gpg && sudo pacman-key --lsign-key 8A8F901A && rm sublimehq-pub.gpg
-#stable x86
-echo -e "\n[sublime-text]\nServer = https://download.sublimetext.com/arch/stable/x86_64" | sudo tee -a /etc/pacman.conf
-yay -Syu sublime-text --noconfirm
+module_utilities() {
+    echo "[*] Running Utilities & Gaming setup..."
+    paru -Syu exiftool protontricks 7zip jq wine-mono obs-studio tree --noconfirm
+    paru -Syu synology-drive qt5-wayland --noconfirm
+    paru -Syu discord steam --noconfirm
+}
 
+run_all() {
+    module_dotfiles
+    module_hyprland
+    module_audio
+    module_networking
+    module_dev
+    module_utilities
+}
 
-# install screen sharing ability 
-# XWayland Video Bridge https://invent.kde.org/system/xwaylandvideobridge
-# By design, X11 applications can't access window or screen contents for wayland clients. This is fine in principle, but it breaks screen sharing in tools like Discord, MS Teams, Skype, etc and more.
-yay -Syu xwaylandvideobridge --noconfirm
+main_menu() {
+    while true; do
+        echo ""
+        echo "--- Installation Menu ---"
+        echo "[Enter] RUN ALL MODULES (Default)"
+        echo "1) Dotfiles & Base Setup"
+        echo "2) Hyprland / Desktop Environment"
+        echo "3) Audio & Input Processing"
+        echo "4) Networking & DNS (Cloudflare)"
+        echo "5) Development & AI Tools"
+        echo "6) Utilities & Gaming"
+        echo "q) Quit"
+        read -p "Select an option: " choice
 
-# install audio eq + input processing (needed for shit mic)
-yay -Syu easyeffects lsp-plugins calf --noconfirm
-# absolute legend: https://adamgradzki.com/adding-deepfilternet-noise-reduction-to-easy-effects-on-arch-linux.html
-curl -LO https://github.com/Rikorose/DeepFilterNet/releases/download/v0.5.6/libdeep_filter_ladspa-0.5.6-x86_64-unknown-linux-gnu.so
-sudo mv -v libdeep_filter_ladspa-0.5.6-x86_64-unknown-linux-gnu.so /usr/lib64/ladspa/libdeep_filter_ladspa.so
+        case $choice in
+            ""|7|" ") run_all ;;
+            1) module_dotfiles ;;
+            2) module_hyprland ;;
+            3) module_audio ;;
+            4) module_networking ;;
+            5) module_dev ;;
+            6) module_utilities ;;
+            q|Q) echo "Exiting."; exit 0 ;;
+            *) echo "[!] Invalid option. Please try again." ;;
+        esac
 
-#easyeffects -l LoudnessEqualizer
-easyeffects -l mascnprvoice_noisereduction
+        echo ""
+        echo "[+] Module execution finished."
+    done
+}
 
-# dnscrypt-proxy setup (cloudflare)
-yay -S dnscrypt-proxy --noconfirm
-sudo systemctl stop systemd-resolved
-sudo systemctl disable --now systemd-resolved || true
-sudo cp /etc/dnscrypt-proxy/dnscrypt-proxy.toml /etc/dnscrypt-proxy/dnscrypt-proxy.toml.bak
-sudo sed -i \
-  -e "s|^#\?listen_addresses =.*|listen_addresses = ['127.0.0.53:53']|" \
-  -e "s|^#\?dnscrypt_servers =.*|dnscrypt_servers = false|" \
-  -e "s|^#\?doh_servers =.*|doh_servers = true|" \
-  -e "s|^#\?require_dnssec =.*|require_dnssec = true|" \
-  -e "s|^#\?cache =.*|cache = true|" \
-  -e "s|^#\?cache_size =.*|cache_size = 4096|" \
-  "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
-sudo sed -i -e "s|^#.\?server_names =.*|server_names = ['cloudflare', 'cloudflare-security']|" "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
-
-sudo systemctl enable --now dnscrypt-proxy
-# may need to reboot
-# browse to https://1.1.1.1/help to verify
-
-# generate gpg key
-#gpg --full-generate-key
-
-# other tools
-yay -Syu exiftool protontricks 7zip jq wine-mono obs-studio tree --noconfirm
-
-# synology drive
-yay -Syu synology-drive qt5-wayland --noconfirm
-# mounted D/Project to ~/SynologyDrive
-# NFS mount downloads steps below
-#sudo mkdir /mnt/synology
-#sudo mount -t nfs YOUR_NAS_IP:/volume1/YOUR_SHARE_NAME /mnt/synology
-#sudo vi /etc/fstab
-# YOUR_NAS_IP:/YOUR_SHARE_NAME /mnt/synology nfs defaults 0 0
-#ln -s /mnt/synology/YOUR_SHARE_NAME ~/Downloads
-
-
-# discord + steam
-yay -Syu discord --noconfirm
-yay -Syu steam --noconfirm
-
-# dev environment
-yay -Syu code docker --noconfirm
-systemctl start docker && systemctl enable docker
-
-# ai toolkit
-curl -fsSL https://claude.ai/install.sh | bash
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.config/fish/config.fish && source ~/.config/fish/config.fish
+main_menu

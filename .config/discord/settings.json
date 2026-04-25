@@ -1,15 +1,17 @@
 {
-  "BACKGROUND_COLOR": "#121214",
+  "BACKGROUND_COLOR": "#2c2d32",
   "offloadAdmControls": true,
   "chromiumSwitches": {},
   "IS_MAXIMIZED": false,
   "IS_MINIMIZED": false,
   "WINDOW_BOUNDS": {
-    "x": 727,
+    "x": 22,
     "y": 58,
-    "width": 940,
-    "height": 1233
+    "width": 1396,
+    "height": 612
   },
   "MINIMIZE_TO_TRAY": false,
-  "SKIP_HOST_UPDATE": true
+  "SKIP_HOST_UPDATE": true,
+  "openH264Enabled": true,
+  "enableLibOpenH264Electron": false
 }

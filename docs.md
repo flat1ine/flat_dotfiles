@@ -247,8 +247,9 @@ mkdir /mnt/synology
 mount -t nfs nas.ip.address:/volume1/share_name /mnt/synology
 
 ### Permanent fstab entry format:
+```
 nas.ip.address:/YOUR_SHARE_NAME  /mnt/synology  nfs4  defaults,_netdev,noatime,x-systemd.automount,rw,user 0 0
-
+```
 
 ### Optional symlink for convenience (replace with your actual share path):
 `ln -s /mnt/synology/YOUR_SUBFOLDER ~/Downloads`
